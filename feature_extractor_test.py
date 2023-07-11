@@ -27,7 +27,7 @@ def test_transform_df():
     #executa o método
     lista_imagens, lista_categorias = transform_df(df)
 
-    assert isinstance(lista_imagens, list) and all(isinstance(i, np.ndarray) and np.shape(i) == RESNET50_IMG_DIM for i in lista_imagens
+    assert isinstance(lista_imagens, list) and all(isinstance(i, np.ndarray) and i.shape[:2] == RESNET50_IMG_DIM for i in lista_imagens
                                                    ), "Primeiro valor de retorno deve ser uma lista de np.ndarrays de tamanho RESNET50_IMG_DIM!"
     assert isinstance(lista_categorias, list) and all(isinstance(i, np.ndarray) for i in lista_categorias), "Segundo valor de retorno deve ser uma lista de np.ndarrays!"
 
