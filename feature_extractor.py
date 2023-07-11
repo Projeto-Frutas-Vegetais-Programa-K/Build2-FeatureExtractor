@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 
+#dimensão para as imagens funcionarem no resnet50
+RESNET50_IMG_DIM = (224, 224)
 
 class TipoFruta:
     #nome que está no csv
@@ -72,13 +74,13 @@ def transform_df(dataframe):
         dataframe (pd.DataFrame): Um dataframe 'correto', obtido por meio da função csv_to_df
 
     Retorna:
-        lista_imagens ([np.ndarray]): Lista de np.ndarray equivalente de cada imagem. Cada posição contem um ndarray equivalente a imagem
+        lista_imagens ([np.ndarray]): Lista de np.ndarray equivalente de cada imagem. Cada posição contem um ndarray equivalente a imagem, e cada um deve ter RESNET50_IMG_DIM de dimensões.
 
         lista_categorias ([np.ndarray]): lista equivalente da categorização dos dados em one hot encoding. Cada elemento é o ndarray equivalente one hot encoded relatio ao tipo da imagem.
     """
 
     #valores "burros" apenas para passar no teste e facilitar sua escrita
-    a = [np.array([0, 1, 2]), np.array([1, 3, 5])]
+    a = [np.zeros(RESNET50_IMG_DIM), np.ones(RESNET50_IMG_DIM)]
     b = [np.array([0, 1, 0, 0])]
     return (a, b)
 

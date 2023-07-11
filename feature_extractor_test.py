@@ -1,6 +1,6 @@
 #!/bin/python
 import pandas as pd
-import pytest
+import pytest, cv2
 from feature_extractor import *
 
 # Para funcionar, precisa ter o pytest instalado (pip install pytest)
@@ -19,7 +19,6 @@ def test_csv_to_df():
     assert "tipo" in df.columns, "Coluna de 'tipo' deve estar presente no DataFrame!"
 
 
-@pytest.fixture
 def test_transform_df():
     #dado um dataframe válido
     addr = "Dataset-FV.csv" #está no mesmo diretório
@@ -28,17 +27,16 @@ def test_transform_df():
     #executa o método
     lista_imagens, lista_categorias = transform_df(df)
 
-    assert isinstance(lista_imagens, list) and all(isinstance(i, np.ndarray) for i in lista_imagens), "Primeiro valor de retorno deve ser uma lista de np.ndarrays!"
+    assert isinstance(lista_imagens, list) and all(isinstance(i, np.ndarray) and np.shape(i) == RESNET50_IMG_DIM for i in lista_imagens
+                                                   ), "Primeiro valor de retorno deve ser uma lista de np.ndarrays de tamanho RESNET50_IMG_DIM!"
     assert isinstance(lista_categorias, list) and all(isinstance(i, np.ndarray) for i in lista_categorias), "Segundo valor de retorno deve ser uma lista de np.ndarrays!"
 
     f = lambda x: np.sum(x)
     assert all(f(k) == 1 for k in lista_categorias), "Todos os elementos devem ser one hot encoded!"
 
-    return lista_imagens
-
-def test_extract_features(test_transform_df):
+def test_extract_features():
     #dado uma lista de imagens válidas
-    lista_imagens = test_transform_df
+    lista_imagens = [np.zeros(RESNET50_IMG_DIM)]
 
     #executa o método
     features = extract_features(lista_imagens)
