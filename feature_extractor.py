@@ -114,7 +114,7 @@ def transform_df(dataframe):
             quality = splitted[1]
             fruit = splitted[2]
             image = cv2.imread(fp, cv2.IMREAD_UNCHANGED)
-            image = cv2.resize(image, [224,224)
+            image = cv2.resize(image, [224,224])
             lista_imagens.append(image)
             one_hot = fruit+quality
             if one_hot not in type_dict.values():     #ex: {0: 'bananabom', 1: 'pimentaobom', 2: 'macabom' ...}
