@@ -98,6 +98,9 @@ def csv_to_df(csv_addr):
     b = [np.array([0, 1, 0, 0])]
     return (a, b)'''
 
+import re
+import cv2
+
 def transform_df(dataframe):
     df = pd.DataFrame(dataframe)
     fp_list = df['arquivo'].to_numpy()
@@ -110,7 +113,8 @@ def transform_df(dataframe):
           if splitted[0] == 'com_classificacao': #caso csv_to_df não tenha sido usado antes
             quality = splitted[1]
             fruit = splitted[2]
-            image = cv2.imread(fp)
+            image = cv2.imread(fp, cv2.IMREAD_UNCHANGED)
+            image = cv2.resize(image, RESNET50_IMG_DIM)
             lista_imagens.append(image)
             one_hot = fruit+quality
             if one_hot not in type_dict.values():     #ex: {0: 'bananabom', 1: 'pimentaobom', 2: 'macabom' ...}
