@@ -43,7 +43,19 @@ class TipoFruta:
 
 
 def csv_to_df(csv_addr):
-        # Lê o arquivo csv
+    """
+    Função que lê o csv do dataset original e retorna um dataframe do pandas.
+    O arquivo csv lido deve ser filtrado:
+        - Primeira linha  e coluna 'id' são removidos (inuteis).
+        - Linhas cuja coluna 'qualidade' estejam marcadas como 'sem_classificacao' devem ser removidas.
+    Parametros:
+        csv_addr (str): Endereço para o arquivo csv. Ex: "/home/lucas/asdf.csv"
+    Retorna:
+        ret (pandas.DataFrame): Dataframe do pandas relativo ao csv lido e com filtragem aplicada.
+                                Deve começar no indice 0 do dataframe pandas
+    """
+
+    # Lê o arquivo csv
     df = pd.read_csv(csv_addr)
 
     # Remove a primeira linha e a coluna 'id'
