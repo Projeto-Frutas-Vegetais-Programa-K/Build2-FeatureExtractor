@@ -72,7 +72,7 @@ def csv_to_df(csv_addr):
 
 
 
-def transform_df(dataframe):
+'''def transform_df(dataframe):
     """
     Função que lê de fato as imagens e faz a transformação da categoria do tipo
 
@@ -94,7 +94,34 @@ def transform_df(dataframe):
     #valores "burros" apenas para passar no teste e facilitar sua escrita
     a = [np.zeros(RESNET50_IMG_DIM), np.ones(RESNET50_IMG_DIM)]
     b = [np.array([0, 1, 0, 0])]
-    return (a, b)
+    return (a, b)'''
+
+def transform_df(dataframe):
+    df = pd.DataFrame(dataframe)
+    fp_list = df['arquivo'].to_numpy()
+    lista_imagens = []
+    lista_categorias = []
+    i = 0
+    type_dict = {}
+    for fp in fp_list:
+          splitted = re.split('/', fp)
+          if splitted[0] == 'com_classificacao': #caso csv_to_df não tenha sido usado antes
+            quality = splitted[1]
+            fruit = splitted[2]
+            image = cv2.imread(fp)
+            lista_imagens.append(image)
+            one_hot = fruit+quality
+            if one_hot not in type_dict.values():     #ex: {0: 'bananabom', 1: 'pimentaobom', 2: 'macabom' ...}
+              type_dict[i] = one_hot
+              index = i
+              i += 1
+            else:
+              index = list(type_dict.values()).index(one_hot)
+            lista_categorias.append(index)
+    lista_categorias = np.array(lista_categorias)
+    encoded_categorias = np.zeros((lista_categorias.size, lista_categorias.max()+1), dtype=int)
+    encoded_categorias[np.arange(lista_categorias.size),lista_categorias] = 1
+    return (lista_imagens, encoded_categorias)
 
 def extract_features(lista_imagens):
     """
