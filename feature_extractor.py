@@ -1,6 +1,8 @@
 #!/bin/python
 import pandas as pd
 import numpy as np
+import re
+import cv2
 
 #dimensão para as imagens funcionarem no resnet50
 RESNET50_IMG_DIM = (224, 224)
