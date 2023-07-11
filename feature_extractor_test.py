@@ -8,8 +8,6 @@ from feature_extractor import *
 # todas as funções com test_ no inicio
 
 
-
-@pytest.fixture
 def test_csv_to_df():
     addr = "Dataset-FV.csv" #está no mesmo diretório
     df = csv_to_df(addr)
@@ -20,14 +18,12 @@ def test_csv_to_df():
     assert not any(df["qualidade"] == "sem_classificacao"), "As imagens do tipo 'sem_classificacao' devem ser removidas!"
     assert "tipo" in df.columns, "Coluna de 'tipo' deve estar presente no DataFrame!"
 
-    #retorna o objeto testado
-    return df
-
 
 @pytest.fixture
-def test_transform_df(test_csv_to_df):
+def test_transform_df():
     #dado um dataframe válido
-    df = test_csv_to_df
+    addr = "Dataset-FV.csv" #está no mesmo diretório
+    df = csv_to_df(addr)
 
     #executa o método
     lista_imagens, lista_categorias = transform_df(df)
