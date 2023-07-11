@@ -108,14 +108,30 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
     Para o dataframe de teste, temos o restante, ou seja, 1 - train_split de percentual.
     Já para o de validação, calculamos este encima do percentual reservado para o treino (ou seja, para treino mesmo sobra train_split*(1 - validation_split))
 
-    aqui vale lembrar que deve ser feito um shuffle nas "linhas" do dataframe "mestre", de modo a tentar deixar mais justo antes da divisão
+    Aqui vale lembrar que deve ser feito um shuffle nas "linhas" do dataframe "mestre", de modo a tentar deixar mais justo antes da divisão. Cada dataframe deve ser "escrito" da seguinte forma:
+            - primeiras 2048 colunas devem ser relativas às 2048 features.
+            - próximas colunas devem corresponder às colunas do tipo equivalente em one hot encoded
+
 
     Parametros:
-         features ([np.ndarray]): Lista de ndarray com as features de cada imagem. Cada imagem será equivalente a um ndarray de 2048 posições (np.array ([f1, f2, ..., f2048]))
+        features ([np.ndarray]): Lista de ndarray com as features de cada imagem. Cada imagem será equivalente a um ndarray de 2048 posições (np.array ([f1, f2, ..., f2048]))
 
-    lista_categorias ([np.ndarray]): lista equivalente da categorização dos dados em one hot encoding. Cada elemento é o ndarray equivalente one hot encoded relatio ao tipo da imagem.
+        lista_categorias ([np.ndarray]): lista equivalente da categorização dos dados em one hot encoding. Cada elemento é o ndarray equivalente one hot encoded relatio ao tipo da imagem.
 
-    train_split (float): percentual reservado para o treino
-    validation_split (float): percentual reservado para a validação
+        train_split (float): percentual reservado para o treino
+
+        validation_split (float): percentual reservado para a validação
+
+    Retorna:
+        treino (pd.DataFrame): Um dataframe do pandas representando o dataset de treino.
+        teste(pd.DataFrame): Um dataframe do pandas representando o dataset de teste
+        val (pd.DataFrame): Um dataframe do pandas representando o dataset de validação
+
 
     """
+
+    treino = pd.DataFrame()
+    teste = pd.DataFrame()
+    val = pd.DataFrame()
+
+    return (treino, teste, val)
