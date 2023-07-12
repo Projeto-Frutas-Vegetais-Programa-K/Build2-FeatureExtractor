@@ -9,12 +9,12 @@ RESNET50_IMG_DIM = (224, 224)
 
 class TipoFruta:
     #nome que está no csv
-    nomes_csv_frutas = ["abacate", "banana", "caqui", "laranja", "limao", "maca", "mamao", "melancia", "morango", "pessego", "pimentao", "tomate"]
+    nomes_csv_frutas = ["abacate", "banana", "caqui", "laranja", "limao", "maca", "mamao", "melancia", "morango", "pessego", "pimentao", "tomate", "pepino"]
     qual_csv_frutas = ["bom", "ruim"]
 
     #nome apresentável
-    nome_bonito = ["Abacate", "Banana", "Caqui", "Laranja", "Limão", "Maçã", "Mamão", "Melancia", "Morango", "Pêssego", "Pimentão", "Tomate"]
-    qual_bonito = ["bom", "boa", "bom", "boa", "bom", "boa", "bom", "boa", "bom", "bom", "bom", "bom"]
+    nome_bonito = ["Abacate", "Banana", "Caqui", "Laranja", "Limão", "Maçã", "Mamão", "Melancia", "Morango", "Pêssego", "Pimentão", "Tomate", "Pepino"]
+    qual_bonito = ["bom", "boa", "bom", "boa", "bom", "boa", "bom", "boa", "bom", "bom", "bom", "bom", "bom"]
 
     len_nomes = len(nomes_csv_frutas)
     len_qual = len(qual_csv_frutas)
@@ -71,43 +71,12 @@ def csv_to_df(csv_addr):
 
     return df
     
-
-
-
-'''def transform_df(dataframe):
-    """
-    Função que lê de fato as imagens e faz a transformação da categoria do tipo
-
-    A idéia é usar a relação índice -> nome relacionado, para que trabalhemos com números e no futuro consigamos saber o 'nome' do tipo  (ex: banana boa) por meio do indice. Isso também facilita o caso reverso, pois podemos usar os indices para criar um equivalente para o one hot encoded. Ex indice 0 -> [1 0 0 ...0], indice 1 -> [0 1 0 0 ....0] (ou seja, o numero indica a posição que marcaremos como 1, partindo da esquerda para a direita por ex). Portanto podemos transformar algo como "Banana boa", "Melão ruim", em algo tratável para uma IA em modelo de classificação (ou seja, números). Olhar a pequena classe implementada acima, TipoFrutas que já tem métodos para isso
-
-    Aqui o objetivo é:
-        - Pegar o endereço de cada imagem, transformar em um numpy.ndarray
-        - Pegar cada categoria de tipo (" por ex, banana boa, maçã ruim", ...) e transformar em one hot encoded (para ser utilizável na rede, pois temos um problema de classificação)
-
-    Parametros:
-        dataframe (pd.DataFrame): Um dataframe 'correto', obtido por meio da função csv_to_df
-
-    Retorna:
-        lista_imagens ([np.ndarray]): Lista de np.ndarray equivalente de cada imagem. Cada posição contem um ndarray equivalente a imagem, e cada um deve ter RESNET50_IMG_DIM de dimensões.
-
-        lista_categorias ([np.ndarray]): lista equivalente da categorização dos dados em one hot encoding. Cada elemento é o ndarray equivalente one hot encoded relatio ao tipo da imagem.
-    """
-
-    #valores "burros" apenas para passar no teste e facilitar sua escrita
-    a = [np.zeros(RESNET50_IMG_DIM), np.ones(RESNET50_IMG_DIM)]
-    b = [np.array([0, 1, 0, 0])]
-    return (a, b)'''
-
-import re
-import cv2
-
 def transform_df(dataframe):
+    tipo_fruta = TipoFruta()
     df = pd.DataFrame(dataframe)
     fp_list = df['arquivo'].to_numpy()
     lista_imagens = []
     lista_categorias = []
-    i = 0
-    type_dict = {}
     for fp in fp_list:
           splitted = re.split('/', fp)
           if splitted[0] == 'com_classificacao': #caso csv_to_df não tenha sido usado antes
@@ -116,17 +85,9 @@ def transform_df(dataframe):
             image = cv2.imread(fp, cv2.IMREAD_UNCHANGED)
             image = cv2.resize(image, [224,224])
             lista_imagens.append(image)
-            one_hot = fruit+quality
-            if one_hot not in type_dict.values():     #ex: {0: 'bananabom', 1: 'pimentaobom', 2: 'macabom' ...}
-              type_dict[i] = one_hot
-              index = i
-              i += 1
-            else:
-              index = list(type_dict.values()).index(one_hot)
+            index = tipo_fruta.get_index(fruit, quality)
             lista_categorias.append(index)
-    lista_categorias = np.array(lista_categorias)
-    encoded_categorias = np.zeros((lista_categorias.size, lista_categorias.max()+1), dtype=int)
-    encoded_categorias[np.arange(lista_categorias.size),lista_categorias] = 1
+    encoded_categorias = list(map(tipo_fruta.one_hot_code_of, lista_categorias))
     return (lista_imagens, encoded_categorias)
 
 def extract_features(lista_imagens):
