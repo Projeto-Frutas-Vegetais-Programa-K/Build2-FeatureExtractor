@@ -45,3 +45,43 @@ def test_extract_features():
                      ), "Valor de retorno deve ser uma lista de np.ndarrays de 2048 features cada!"
 
 
+
+def test_split_into_dataframes():
+
+    #valores burros para testar a função de splitar em
+    features = [np.zeros(2048) for i in range(0, 10)]
+    lista_categorias = [np.array([0, 1, 0, 0]) for i in range(0, 10)]
+
+    train_split = 0.8
+    validation_split = 0.2
+
+    # Metodo interno que checa se o dataframe é one hot encoded
+    def is_one_hot_encoded(dataframe):
+        for _, row in dataframe.iterrows():
+            #garante que tem apenas um único valor não nulo
+            if row.astype(bool).sum() != 1:
+                return False
+
+            # garante que este valor não nulo é o 1
+            if row[row != 0].sum() != 1:
+                return False
+        return True
+
+    #executa o metodo
+    treino, teste, val = split_into_dataframes(features, lista_categorias, train_split, validation_split)
+
+    assert isinstance(treino, pd.DataFrame), "Primeiro retorno deve ser um DataFrame do pandas!"
+    assert isinstance(teste, pd.DataFrame), "Segundo retorno deve ser um DataFrame do pandas!"
+    assert isinstance(val, pd.DataFrame), "Terceiro retorno deve ser um DataFrame do pandas!"
+
+    for df in [treino, teste, val]:
+        #extrai o numero de colunas do dataframe
+        n_columns = df.shape[1]
+
+        assert n_columns >= 2048, "Dataframe não contêm as 2048 features esperadas!"
+        assert n_columns > 2048, "Dataframe não contêm colunas representando a saida one hot encoded!"
+
+        #caso os asserts passem... extrai as colunas do one hot encoding
+        ohe_df = df.iloc[:, 2048:]
+
+        assert is_one_hot_encoded(ohe_df), "Colunas após as features não são do tipo one hot encoded conforme o esperado"
