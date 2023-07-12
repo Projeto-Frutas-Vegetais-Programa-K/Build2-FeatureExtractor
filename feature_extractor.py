@@ -177,8 +177,29 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
 
     """
 
-    treino = pd.DataFrame()
-    teste = pd.DataFrame()
-    val = pd.DataFrame()
+    #função que gera um dataframe "burro" válido, para validar a função de teste
+    def generate_dummy_dataframe(nrows):
+        # Gerar dados aleatórios para as 2048 colunas
+        data = np.random.random((nrows, 2048))
+
+        # Criar o dataframe com as colunas aleatórias
+        df = pd.DataFrame(data)
+
+        # Adicionar 4 colunas extras representando a codificação one-hot
+        one_hot_columns = pd.DataFrame(np.eye(4)[np.random.choice(4, size=nrows)])
+        df = pd.concat([df, one_hot_columns], axis=1)
+
+        return df
+
+    sz_treino_burro = int(len(features)*train_split)
+    sz_teste_burro = len(features) - sz_treino_burro
+
+    sz_val_burro = int(sz_treino_burro*validation_split)
+    sz_treino_burro = sz_treino_burro - sz_val_burro
+
+
+    treino = generate_dummy_dataframe(sz_treino_burro)
+    teste = generate_dummy_dataframe(sz_teste_burro)
+    val = generate_dummy_dataframe(sz_val_burro)
 
     return (treino, teste, val)
