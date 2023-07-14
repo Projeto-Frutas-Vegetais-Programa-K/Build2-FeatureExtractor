@@ -36,7 +36,7 @@ def test_transform_df():
 
 def test_extract_features():
     #dado uma lista de imagens válidas
-    lista_imagens = [np.zeros(RESNET50_IMG_DIM)]
+    lista_imagens = [np.zeros([224,224,3])]
 
     #executa o método
     features = extract_features(lista_imagens)

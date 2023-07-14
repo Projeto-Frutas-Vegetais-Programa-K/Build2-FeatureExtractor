@@ -3,7 +3,13 @@ import pandas as pd
 import numpy as np
 import re
 import cv2
+import tensorflow as tf
+from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from tensorflow.keras.models import Model
 
+
+#base_model = ResNet50(weights='imagenet')
+#model = Model(inputs=base_model.input, outputs=base_model.get_layer('avg_pool').output)
 #dimensão para as imagens funcionarem no resnet50
 RESNET50_IMG_DIM = (224, 224)
 
@@ -104,9 +110,32 @@ def extract_features(lista_imagens):
         features ([np.ndarray]): Lista de ndarray com as features de cada imagem. Cada imagem será equivalente a um ndarray de 2048 posições (np.array ([f1, f2, ..., f2048]))
     """
 
-    #valores "burros" apenas para passar no teste e facilitar sua escrita
-    a = [np.zeros(2048)]
-    return a
+
+     # Carregar o modelo ResNet50 pré-treinado
+    base_model = ResNet50(weights='imagenet')
+    model = Model(inputs=base_model.input, outputs=base_model.get_layer('avg_pool').output)
+
+    # Lista para armazenar as características de cada imagem
+    features_array = []
+
+    # Iterar sobre cada imagem na lista
+    for imagem in lista_imagens:
+        # Redimensionar a imagem para o tamanho esperado pela ResNet50
+        imagem = np.resize(imagem, (224, 224, 3))
+
+        # Pré-processar a imagem para a entrada da ResNet50
+        imagem = preprocess_input(imagem)
+
+        # Expandir as dimensões da imagem para que seja compatível com a entrada da ResNet50
+        imagem = np.expand_dims(imagem, axis=0)
+
+        # Obter as características da imagem usando a ResNet50
+        features = model.predict(imagem).reshape(2048,)
+
+        # Adicionar as características à lista de características
+        features_array.append(features)
+
+    return features_array
 
 def split_into_dataframes(features, lista_categorias, train_split, validation_split):
     """
@@ -164,3 +193,6 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
     val = generate_dummy_dataframe(sz_val_burro)
 
     return (treino, teste, val)
+
+teste = extract_features(np.zeros([224, 224,3]))
+print(teste)
