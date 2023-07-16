@@ -6,6 +6,7 @@ import cv2
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 from tensorflow.keras.models import Model
+from sklearn.model_selection import train_test_split
 
 
 #base_model = ResNet50(weights='imagenet')
@@ -143,7 +144,7 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
 
     Para o dataframe do treino, temos o train_split que é o percentual relativo para a parte de treino em cima do total.
     Para o dataframe de teste, temos o restante, ou seja, 1 - train_split de percentual.
-    Já para o de validação, calculamos este encima do percentual reservado para o treino (ou seja, para treino mesmo sobra train_split*(1 - validation_split))
+    Já para o de validação, calculamos este em cima do percentual reservado para o treino (ou seja, para treino mesmo sobra train_split*(1 - validation_split))
 
     Aqui vale lembrar que deve ser feito um shuffle nas "linhas" do dataframe "mestre", de modo a tentar deixar mais justo antes da divisão. Cada dataframe deve ser "escrito" da seguinte forma:
             - primeiras 2048 colunas devem ser relativas às 2048 features.
@@ -166,33 +167,17 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
 
 
     """
+    # Concatenate features and lista_categorias
+    df = pd.DataFrame({'features': features, 'categorias': lista_categorias})
+    df = df.sample(frac=1, random_state=42)
 
-    #função que gera um dataframe "burro" válido, para validar a função de teste
-    def generate_dummy_dataframe(nrows):
-        # Gerar dados aleatórios para as 2048 colunas
-        data = np.random.random((nrows, 2048))
+    # Split the data into train and test sets
+    treino, teste = train_test_split(df, test_size=1 - train_split, random_state=42)
 
-        # Criar o dataframe com as colunas aleatórias
-        df = pd.DataFrame(data)
+    # Split the test_val set into validation and test sets
+    treino, val = train_test_split(treino, test_size=validation_split, random_state=42)
 
-        # Adicionar 4 colunas extras representando a codificação one-hot
-        one_hot_columns = pd.DataFrame(np.eye(4)[np.random.choice(4, size=nrows)])
-        df = pd.concat([df, one_hot_columns], axis=1)
-
-        return df
-
-    sz_treino_burro = int(len(features)*train_split)
-    sz_teste_burro = len(features) - sz_treino_burro
-
-    sz_val_burro = int(sz_treino_burro*validation_split)
-    sz_treino_burro = sz_treino_burro - sz_val_burro
-
-
-    treino = generate_dummy_dataframe(sz_treino_burro)
-    teste = generate_dummy_dataframe(sz_teste_burro)
-    val = generate_dummy_dataframe(sz_val_burro)
-
-    return (treino, teste, val)
+    return (treino, val, teste)
 
 teste = extract_features(np.zeros([224, 224,3]))
 print(teste)
