@@ -168,7 +168,9 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
 
     """
     # Concatenate features and lista_categorias
-    df = pd.DataFrame({'features': features, 'categorias': lista_categorias})
+    ft = pd.DataFrame(features)
+    cat = pd.DataFrame(lista_categorias)
+    df = pd.concat([ft, cat], axis=1)
     df = df.sample(frac=1, random_state=42)
 
     # Split the data into train and test sets
@@ -177,5 +179,5 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
     # Split the test_val set into validation and test sets
     treino, val = train_test_split(treino, test_size=validation_split, random_state=42)
 
-    return (treino, val, teste)
+    return (treino, teste, val)
 
