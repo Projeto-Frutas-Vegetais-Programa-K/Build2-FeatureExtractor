@@ -78,7 +78,7 @@ def test_split_into_dataframes():
         #extrai o numero de colunas do dataframe
         n_columns = df.shape[1]
 
-        assert n_columns >= 2048, f"Dataframe não contêm as 2048 features esperadas!: {n_columns}"
+        assert n_columns >= 2048, f"Dataframe não contêm as 2048 features esperadas!"
         assert n_columns > 2048, "Dataframe não contêm colunas representando a saida one hot encoded!"
 
         #caso os asserts passem... extrai as colunas do one hot encoding
