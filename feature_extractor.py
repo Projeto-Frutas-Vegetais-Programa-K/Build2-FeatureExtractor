@@ -194,5 +194,5 @@ def split_into_dataframes(features, lista_categorias, train_split, validation_sp
 
     return (treino, teste, val)
 
-teste = extract_features(np.zeros([224, 224,3]))
-print(teste)
+#teste = extract_features(np.zeros([224, 224,3]))
+#print(teste)
